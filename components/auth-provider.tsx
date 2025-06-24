@@ -32,14 +32,30 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext)
 
-
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Si Supabase no está configurado, mostrar componente de configuración
+  // Si Supabase no está configurado, mostrar componente de configuración en desarrollo
+  // En producción, mostrar error
   if (!isSupabaseConfigured()) {
+    if (process.env.NODE_ENV === 'production') {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="max-w-md w-full space-y-8 p-8">
+            <div className="text-center">
+              <h2 className="mt-6 text-3xl font-bold text-gray-900">
+                Error de Configuración
+              </h2>
+              <p className="mt-2 text-sm text-gray-600">
+                La aplicación no está configurada correctamente. 
+                Por favor contacta al administrador.
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+    }
     return <SupabaseSetup />
   }
 
